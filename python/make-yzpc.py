@@ -1,8 +1,4 @@
-import sys
-import random
 import math
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import mean_squared_error
 
 ADVERTISERS = ["1458", "2259", "2261", "2821", "2997", "3358", "3386", "3427", "3476"]
 chanel_index = 11

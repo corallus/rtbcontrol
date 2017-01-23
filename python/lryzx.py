@@ -1,10 +1,11 @@
 #!/usr/bin/python
-import sys
-import random
 import math
 import operator
-from sklearn.metrics import roc_auc_score
+import random
+import sys
+
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import roc_auc_score
 
 bufferCaseNum = 1000000
 eta = 0.01

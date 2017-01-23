@@ -1,9 +1,6 @@
 #!/usr/bin/python
-import sys
-import random
 import math
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import mean_squared_error
+import random
 
 advertiser = "1458"
 mode = "test"
@@ -184,10 +181,10 @@ def control(cntr_rounds, ref, para_p, para_i, para_d, outfile):
         click_ratio = total_clks * 1.0 / advs_test_clicks
         win_ratio = total_wins * 1.0 / advs_test_bids
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ecpcs[round], "test", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
+            round, ecpcs[round], "test", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
     for round in range(0, cntr_rounds):
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ref, "test-ref", 0.0, 0, 0.0, 0.0, tc[round], ref))
+            round, ref, "test-ref", 0.0, 0, 0.0, 0.0, tc[round], ref))
     overshoot.append(cal_overshoot(ecpcs, ref))
     settling_time.append(cal_settling_time(ecpcs, ref))
     rise_time.append(cal_rise_time(ecpcs, ref, rise_con))
@@ -251,10 +248,10 @@ def control(cntr_rounds, ref, para_p, para_i, para_d, outfile):
         click_ratio = total_clks * 1.0 / advs_train_clicks
         win_ratio = total_wins * 1.0 / advs_train_bids
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ecpcs_train[round], "train", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
+            round, ecpcs_train[round], "train", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
     for round in range(0, cntr_rounds):
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ref, "train-ref", 0.0, 0, 0.0, 0.0, tc_train[round], ref))
+            round, ref, "train-ref", 0.0, 0, 0.0, 0.0, tc_train[round], ref))
     fo.close()
 
 
@@ -315,7 +312,7 @@ def control_test(cntr_rounds, ref, para_p, para_i, para_d):
         click_ratio = total_clks * 1.0 / advs_test_clicks
         win_ratio = total_wins * 1.0 / advs_test_bids
         print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f" % (
-        round, ecpcs[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
+            round, ecpcs[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
     overshoot.append(cal_overshoot(ecpcs, ref))
     settling_time.append(cal_settling_time(ecpcs, ref))
     rise_time.append(cal_rise_time(ecpcs, ref, rise_con))
@@ -379,7 +376,7 @@ def control_test(cntr_rounds, ref, para_p, para_i, para_d):
         click_ratio = total_clks * 1.0 / advs_train_clicks
         win_ratio = total_wins * 1.0 / advs_train_bids
         print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f" % (
-        round, ecpcs_train[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
+            round, ecpcs_train[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
 
 
 random.seed(10)

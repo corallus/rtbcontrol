@@ -1,7 +1,6 @@
 #!/usr/bin/python
-import sys
-import random
 import math
+import random
 
 advs_train_bids = {"1458": 3083056, "2259": 835556, "2261": 687617, "2821": 1322561, "2997": 312437, "3358": 1742104,
                    "3386": 2847802, "3427": 2593765, "3476": 1970360}
@@ -206,10 +205,10 @@ def control(cntr_rounds, ref, para_p, para_i, para_d, outfile):
         click_ratio = total_clks * 1.0 / advs_test_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_test_bids[advertiser]
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, winrs[round], "test", phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs[round], ref))
+            round, winrs[round], "test", phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs[round], ref))
     for round in range(0, cntr_rounds):
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ref, "test-ref", 0.0, 0, 0.0, 0.0, 0.0, tc[round], ref))
+            round, ref, "test-ref", 0.0, 0, 0.0, 0.0, 0.0, tc[round], ref))
     overshoot.append(cal_overshoot(winrs, ref))
     settling_time.append(cal_settling_time(winrs, ref))
     rise_time.append(cal_rise_time(winrs, ref, rise_con))
@@ -277,11 +276,11 @@ def control(cntr_rounds, ref, para_p, para_i, para_d, outfile):
         click_ratio = total_clks * 1.0 / advs_train_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_train_bids[advertiser]
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, winrs_train[round], "train", phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs_train[round],
-        ref))
+            round, winrs_train[round], "train", phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs_train[round],
+            ref))
     for round in range(0, cntr_rounds):
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ref, "train-ref", 0.0, 0, 0.0, 0.0, 0.0, tc_train[round], ref))
+            round, ref, "train-ref", 0.0, 0, 0.0, 0.0, 0.0, tc_train[round], ref))
     fo.close()
 
 
@@ -344,7 +343,7 @@ def control_test(cntr_rounds, ref, para_p, para_i, para_d):
         click_ratio = total_clks * 1.0 / advs_test_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_test_bids[advertiser]
         print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.1f\t%.4f\t%.4f" % (
-        round, winrs[round], phi, total_clks, click_ratio, win_ratio, ref, ecpcs[round], total_cost)
+            round, winrs[round], phi, total_clks, click_ratio, win_ratio, ref, ecpcs[round], total_cost)
     overshoot.append(cal_overshoot(winrs, ref))
     settling_time.append(cal_settling_time(winrs, ref))
     rise_time.append(cal_rise_time(winrs, ref, rise_con))
@@ -410,7 +409,7 @@ def control_test(cntr_rounds, ref, para_p, para_i, para_d):
         click_ratio = total_clks * 1.0 / advs_train_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_train_bids[advertiser]
         print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.1f\t%.4f\t%.4f" % (
-        round, winrs_train[round], phi, total_clks, click_ratio, win_ratio, ref, ecpcs_train[round], total_cost)
+            round, winrs_train[round], phi, total_clks, click_ratio, win_ratio, ref, ecpcs_train[round], total_cost)
 
 
 random.seed(10)

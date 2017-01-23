@@ -1,7 +1,6 @@
 #!/usr/bin/python
-import sys
-import random
 import math
+import random
 
 advs_train_bids = {"1458": 3083056, "2259": 835556, "2261": 687617, "2821": 1322561, "2997": 312437, "3358": 1742104,
                    "3386": 2847802, "3427": 2593765, "3476": 1970360}
@@ -213,10 +212,10 @@ def control(cntr_rounds, ref, para_gamma, outfile):
         click_ratio = total_clks * 1.0 / advs_test_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_test_bids[advertiser]
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ecpcs[round], "test", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
+            round, ecpcs[round], "test", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
     for round in range(0, cntr_rounds):
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ref, "test-ref", 0.0, 0, 0.0, 0.0, tc[round], ref))
+            round, ref, "test-ref", 0.0, 0, 0.0, 0.0, tc[round], ref))
     overshoot.append(cal_overshoot(ecpcs, ref))
     settling_time.append(cal_settling_time(ecpcs, ref))
     rise_time.append(cal_rise_time(ecpcs, ref, rise_con))
@@ -240,7 +239,7 @@ def control(cntr_rounds, ref, para_gamma, outfile):
             first_round = False
         else:
             temp_ref[round] = (budget_train - total_cost) / (
-            (budget_train / ref) - ((total_cost / ecpcs_train[round - 1])))
+                (budget_train / ref) - ((total_cost / ecpcs_train[round - 1])))
             if temp_ref[round] <= min_ref:
                 temp_ref[round] = min_ref
             elif temp_ref[round] >= max_ref:
@@ -282,10 +281,10 @@ def control(cntr_rounds, ref, para_gamma, outfile):
         click_ratio = total_clks * 1.0 / advs_train_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_train_bids[advertiser]
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ecpcs_train[round], "train", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
+            round, ecpcs_train[round], "train", phi, total_clks, click_ratio, win_ratio, total_cost, ref))
     for round in range(0, cntr_rounds):
         fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
-        round, ref, "train-ref", 0.0, 0, 0.0, 0.0, total_cost, ref))
+            round, ref, "train-ref", 0.0, 0, 0.0, 0.0, total_cost, ref))
     fo.close()
 
 
@@ -345,7 +344,7 @@ def control_test(cntr_rounds, ref, para_gamma):
         click_ratio = total_clks * 1.0 / advs_test_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_test_bids[advertiser]
         print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f" % (
-        round, ecpcs[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
+            round, ecpcs[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
     overshoot.append(cal_overshoot(ecpcs, ref))
     settling_time.append(cal_settling_time(ecpcs, ref))
     rise_time.append(cal_rise_time(ecpcs, ref, rise_con))
@@ -368,7 +367,7 @@ def control_test(cntr_rounds, ref, para_gamma):
             first_round = False
         else:
             temp_ref[round] = (budget_train - total_cost) / (
-            (budget_train / ref) - ((total_cost / ecpcs_train[round - 1])))
+                (budget_train / ref) - ((total_cost / ecpcs_train[round - 1])))
             if temp_ref[round] <= min_ref:
                 temp_ref[round] = min_ref
             elif temp_ref[round] >= max_ref:
@@ -409,7 +408,7 @@ def control_test(cntr_rounds, ref, para_gamma):
         click_ratio = total_clks * 1.0 / advs_train_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_train_bids[advertiser]
         print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.1f" % (
-        round, ecpcs_train[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
+            round, ecpcs_train[round], phi, total_clks, click_ratio, win_ratio, total_cost, ref)
 
 
 random.seed(10)

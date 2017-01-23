@@ -1,9 +1,7 @@
 #!/usr/bin/python
-import sys
-import random
 import math
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import mean_squared_error
+import random
+import sys
 
 advs_train_bids = {"1458": 3083056, "2259": 835556, "2261": 687617, "2821": 1322561, "2997": 312437, "3358": 1742104,
                    "3386": 2847802, "3427": 2593765, "3476": 1970360}
@@ -157,7 +155,7 @@ def cal_rmse_ss(ecpcs, adex_ref):
             settling_time[ex] = cntr_rounds - 1
         for round in range(settling_time[ex], cntr_rounds):
             rmse[ex] += (ecpcs[ex][round] - adex_ref[ex]) * (ecpcs[ex][round] - adex_ref[ex]) / (
-            adex_ref[ex] * adex_ref[ex])
+                adex_ref[ex] * adex_ref[ex])
 
         rmse[ex] /= (cntr_rounds - settling_time[ex])
         rmse[ex] = math.sqrt(rmse[ex])  # weinan: relative rmse
@@ -297,12 +295,12 @@ def control(para_p, para_i, para_d, outfile):
             error = adex_ref["all"] - ecpcs["uni"][round - 1]
             error_sum["uni"] += error
             phi["uni"] = para_p_uni * error + para_i_uni * error_sum["uni"] + para_d_uni * (
-            ecpcs["uni"][round - 2] - ecpcs["uni"][round - 1])
+                ecpcs["uni"][round - 2] - ecpcs["uni"][round - 1])
             for val in list(set(exchange)):
                 error = adex_ref[val] - ecpcs[val][round - 1]
                 error_sum[val] += error
                 phi[val] = para_p * error + para_i * error_sum[val] + para_d * (
-                ecpcs[val][round - 2] - ecpcs[val][round - 1])
+                    ecpcs[val][round - 2] - ecpcs[val][round - 1])
 
         # fang piao
         if phi["uni"] <= min_phi:
@@ -427,27 +425,27 @@ def control(para_p, para_i, para_d, outfile):
             else:
                 ecpcs[val][round] = total_cost[val] * 1.0 / total_clks[val] / 1000.0
             fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-            "test", round, val, ecpcs[val][round], phi[val], total_bid_num[val], total_wins[val], total_clks[val],
-            total_clks[val] * 1.0 / advs_test_clicks[advertiser], total_cost[val], budget, adex_ref[val],
-            advs_test_ori_ecpc[advertiser]))
+                "test", round, val, ecpcs[val][round], phi[val], total_bid_num[val], total_wins[val], total_clks[val],
+                total_clks[val] * 1.0 / advs_test_clicks[advertiser], total_cost[val], budget, adex_ref[val],
+                advs_test_ori_ecpc[advertiser]))
         fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-        "test", round, "all", ecpcs["all"][round], 0.0, total_bid_num["all"], total_wins["all"], total_clks["all"],
-        total_clks["all"] * 1.0 / advs_test_clicks[advertiser], total_cost["all"], budget, 0.0,
-        advs_test_ori_ecpc[advertiser]))
+            "test", round, "all", ecpcs["all"][round], 0.0, total_bid_num["all"], total_wins["all"], total_clks["all"],
+            total_clks["all"] * 1.0 / advs_test_clicks[advertiser], total_cost["all"], budget, 0.0,
+            advs_test_ori_ecpc[advertiser]))
         if lin_total_clks["all"] == 0:
             lin_total_clks["all"] = 1
         lin_ecpc = lin_total_cost["all"] * 1.0 / lin_total_clks["all"] / 1000.0
         fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-        "test", round, "lin", lin_ecpc, 0.0, lin_total_bid_num["all"], lin_total_wins["all"], lin_total_clks["all"],
-        lin_total_clks["all"] * 1.0 / advs_test_clicks[advertiser], lin_total_cost["all"], lin_budget, 0.0,
-        advs_test_ori_ecpc[advertiser]))
+            "test", round, "lin", lin_ecpc, 0.0, lin_total_bid_num["all"], lin_total_wins["all"], lin_total_clks["all"],
+            lin_total_clks["all"] * 1.0 / advs_test_clicks[advertiser], lin_total_cost["all"], lin_budget, 0.0,
+            advs_test_ori_ecpc[advertiser]))
         if uni_total_clks["all"] == 0:
             uni_total_clks["all"] = 1
         ecpcs["uni"][round] = uni_total_cost["all"] * 1.0 / uni_total_clks["all"] / 1000.0
         fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-        "test", round, "uni", ecpcs["uni"][round], phi["uni"], uni_total_bid_num["all"], uni_total_wins["all"],
-        uni_total_clks["all"], uni_total_clks["all"] * 1.0 / advs_test_clicks[advertiser], uni_total_cost["all"],
-        uni_budget, adex_ref["all"], advs_test_ori_ecpc[advertiser]))
+            "test", round, "uni", ecpcs["uni"][round], phi["uni"], uni_total_bid_num["all"], uni_total_wins["all"],
+            uni_total_clks["all"], uni_total_clks["all"] * 1.0 / advs_test_clicks[advertiser], uni_total_cost["all"],
+            uni_budget, adex_ref["all"], advs_test_ori_ecpc[advertiser]))
 
     # print lin and control clicks and cost on each ad exchange
     zfo = open("../report/lin-control-clk-cost-adex-" + advertiser + ".txt", "w")
@@ -518,12 +516,12 @@ def control(para_p, para_i, para_d, outfile):
             error = adex_ref["all"] - ecpcs["uni"][round - 1]
             error_sum["uni"] += error
             phi["uni"] = para_p_uni * error + para_i_uni * error_sum["uni"] + para_d_uni * (
-            ecpcs["uni"][round - 2] - ecpcs["uni"][round - 1])
+                ecpcs["uni"][round - 2] - ecpcs["uni"][round - 1])
             for val in list(set(exchange_train)):
                 error = adex_ref[val] - ecpcs[val][round - 1]
                 error_sum[val] += error
                 phi[val] = para_p * error + para_i * error_sum[val] + para_d * (
-                ecpcs[val][round - 2] - ecpcs[val][round - 1])
+                    ecpcs[val][round - 2] - ecpcs[val][round - 1])
 
         # fang piao
         if phi["uni"] <= min_phi:
@@ -609,27 +607,27 @@ def control(para_p, para_i, para_d, outfile):
             else:
                 ecpcs[val][round] = total_cost[val] * 1.0 / total_clks[val] / 1000.0
             fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-            "train", round, val, ecpcs[val][round], phi[val], total_bid_num[val], total_wins[val], total_clks[val],
-            total_clks[val] * 1.0 / advs_train_clicks[advertiser], total_cost[val], budget, adex_ref[val],
-            advs_train_ori_ecpc[advertiser]))
+                "train", round, val, ecpcs[val][round], phi[val], total_bid_num[val], total_wins[val], total_clks[val],
+                total_clks[val] * 1.0 / advs_train_clicks[advertiser], total_cost[val], budget, adex_ref[val],
+                advs_train_ori_ecpc[advertiser]))
         fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-        "train", round, "all", ecpcs["all"][round], 0.0, total_bid_num["all"], total_wins["all"], total_clks["all"],
-        total_clks["all"] * 1.0 / advs_train_clicks[advertiser], total_cost["all"], budget, 0.0,
-        advs_train_ori_ecpc[advertiser]))
+            "train", round, "all", ecpcs["all"][round], 0.0, total_bid_num["all"], total_wins["all"], total_clks["all"],
+            total_clks["all"] * 1.0 / advs_train_clicks[advertiser], total_cost["all"], budget, 0.0,
+            advs_train_ori_ecpc[advertiser]))
         if lin_total_clks == 0:
             lin_total_clks = 1
         lin_ecpc = lin_total_cost * 1.0 / lin_total_clks / 1000.0
         fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-        "train", round, "lin", lin_ecpc, 0.0, total_bid_num["all"], lin_total_wins, lin_total_clks,
-        lin_total_clks * 1.0 / advs_train_clicks[advertiser], lin_total_cost, lin_budget, 0.0,
-        advs_train_ori_ecpc[advertiser]))
+            "train", round, "lin", lin_ecpc, 0.0, total_bid_num["all"], lin_total_wins, lin_total_clks,
+            lin_total_clks * 1.0 / advs_train_clicks[advertiser], lin_total_cost, lin_budget, 0.0,
+            advs_train_ori_ecpc[advertiser]))
         if uni_total_clks == 0:
             uni_total_clks = 1
         uni_ecpc = uni_total_cost * 1.0 / uni_total_clks / 1000.0
         fo.write("%s\t%d\t%s\t%.4f\t%.4f\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n" % (
-        "train", round, "uni", uni_ecpc, phi["uni"], total_bid_num["all"], uni_total_wins, uni_total_clks,
-        uni_total_clks * 1.0 / advs_train_clicks[advertiser], uni_total_cost, uni_budget, adex_ref["all"],
-        advs_train_ori_ecpc[advertiser]))
+            "train", round, "uni", uni_ecpc, phi["uni"], total_bid_num["all"], uni_total_wins, uni_total_clks,
+            uni_total_clks * 1.0 / advs_train_clicks[advertiser], uni_total_cost, uni_budget, adex_ref["all"],
+            advs_train_ori_ecpc[advertiser]))
         ecpcs["uni"][round] = uni_ecpc
 
     # weinan changes the report from test to train because test has the budget, which leads no settling

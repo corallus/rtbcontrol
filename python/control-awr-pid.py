@@ -116,7 +116,7 @@ def cal_rise_time(winrs, ref, rise_con):
 # calculate percentage overshoot
 def cal_overshoot(winrs, ref):
     if winrs[0] > ref:
-        min = winrs[0];
+        min = winrs[0]
         for key, value in winrs.iteritems():
             if value <= min:
                 min = value

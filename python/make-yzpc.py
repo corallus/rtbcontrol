@@ -78,7 +78,7 @@ for adv in ADVERTISERS:
         if i > 0:
             data = line.split("\t")
             exchange_train.append(data[chanel_index])
-    fi.close
+    fi.close()
 
     fi = open("../../make-ipinyou-data/" + adv + "/test.log.txt", 'r')
     print "read " + adv + " test log"
@@ -86,7 +86,7 @@ for adv in ADVERTISERS:
         if i > 0:
             data = line.split("\t")
             exchange.append(data[chanel_index])
-    fi.close
+    fi.close()
 
     fo = open("../../make-ipinyou-data/" + adv + "/train.yzpc.txt", 'w')
     print "write " + adv + " train yzpc"

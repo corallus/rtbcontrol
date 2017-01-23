@@ -96,7 +96,7 @@ def cal_rise_time(ecpcs, ref, rise_con):
 # calculate percentage overshoot
 def cal_overshoot(ecpcs, ref):
     if ecpcs[0] > ref:
-        min = ecpcs[0];
+        min = ecpcs[0]
         for key, value in ecpcs.iteritems():
             if value <= min:
                 min = value

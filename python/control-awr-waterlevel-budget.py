@@ -127,7 +127,7 @@ def cal_rise_time(winrs, ref, rise_con):
 # calculate percentage overshoot
 def cal_overshoot(winrs, ref):
     if winrs[0] > ref:
-        min = winrs[0];
+        min = winrs[0]
         for key, value in winrs.iteritems():
             if value <= min:
                 min = value
@@ -536,7 +536,7 @@ elif mode == "batch":  # batch mode
             str(rmse_ss[idx]) + "\t" + str(sd_ss[idx]))
     rout.close()
 elif mode == "single":  # single mode
-    out_path = "../exp-data/budget=" + budget_test + "_win_waterlevel_" + advertiser + "_ref=" + str(
+    out_path = "../exp-data/budget=" + str(budget_test) + "_win_waterlevel_" + advertiser + "_ref=" + str(
         ref) + "_gamma=" + str(para_gamma) + ".tsv"
     control(cntr_rounds, ref, para_gamma, out_path)
     report_path = "../report/report-win-waterlevel-budget-single.tsv"

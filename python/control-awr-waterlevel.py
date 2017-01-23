@@ -3,10 +3,14 @@ import sys
 import random
 import math
 
-advs_train_bids = {"1458": 3083056, "2259": 835556, "2261": 687617, "2821": 1322561, "2997": 312437, "3358": 1742104, "3386": 2847802, "3427": 2593765, "3476": 1970360}
-advs_test_bids = {"1458": 614638, "2259": 417197, "2261": 343862, "2821": 661964, "2997": 156063, "3358": 300928, "3386": 545421, "3427": 536795, "3476": 523848}
-advs_train_clicks = {"1458": 2454, "2259": 280, "2261": 207, "2821": 843, "2997": 1386, "3358": 1358, "3386": 2076, "3427": 1926, "3476": 1027}
-advs_test_clicks = {"1458": 543, "2259": 131, "2261": 97, "2821": 394, "2997": 533, "3358": 339, "3386": 496, "3427": 395, "3476": 302}
+advs_train_bids = {"1458": 3083056, "2259": 835556, "2261": 687617, "2821": 1322561, "2997": 312437, "3358": 1742104,
+                   "3386": 2847802, "3427": 2593765, "3476": 1970360}
+advs_test_bids = {"1458": 614638, "2259": 417197, "2261": 343862, "2821": 661964, "2997": 156063, "3358": 300928,
+                  "3386": 545421, "3427": 536795, "3476": 523848}
+advs_train_clicks = {"1458": 2454, "2259": 280, "2261": 207, "2821": 843, "2997": 1386, "3358": 1358, "3386": 2076,
+                     "3427": 1926, "3476": 1027}
+advs_test_clicks = {"1458": 543, "2259": 131, "2261": 97, "2821": 394, "2997": 533, "3358": 339, "3386": 496,
+                    "3427": 395, "3476": 302}
 
 advertiser = "2821"
 mode = "test"
@@ -25,14 +29,17 @@ rise_con = 0.9
 min_phi = -3.5
 max_phi = 2
 
+
 def ints(s):
     res = []
     for ss in s:
         res.append(int(ss))
     return res
 
+
 def sigmoid(p):
     return 1.0 / (1.0 + math.exp(-p))
+
 
 def estimator_lr(feats):
     pred = 0.0
@@ -42,9 +49,11 @@ def estimator_lr(feats):
     pred = sigmoid(pred)
     return pred
 
+
 # bidding functions
 def lin(pctr, basectr, basebid):
-    return int(pctr *  basebid / basectr)
+    return int(pctr * basebid / basectr)
+
 
 # calculate settling time
 def cal_settling_time(winrs, ref):
@@ -60,6 +69,7 @@ def cal_settling_time(winrs, ref):
             settling_time = cntr_rounds
     return settling_time
 
+
 # # calculate steady-state error
 def cal_rmse_ss(winrs, ref):
     settling_time = cal_settling_time(winrs, ref)
@@ -69,8 +79,9 @@ def cal_rmse_ss(winrs, ref):
     for round in range(settling_time, cntr_rounds):
         rmse += (winrs[round] - ref) * (winrs[round] - ref)
     rmse /= (cntr_rounds - settling_time)
-    rmse = math.sqrt(rmse) / ref # weinan: relative rmse
+    rmse = math.sqrt(rmse) / ref  # weinan: relative rmse
     return rmse
+
 
 # # calculate steady-state standard deviation
 def cal_sd_ss(winrs, ref):
@@ -84,8 +95,9 @@ def cal_sd_ss(winrs, ref):
         sum += winrs[round]
     n = cntr_rounds - settling_time
     mean = sum / n
-    sd = math.sqrt(sum2 / n - mean * mean) / mean # weinan: relative sd
+    sd = math.sqrt(sum2 / n - mean * mean) / mean  # weinan: relative sd
     return sd
+
 
 # calculate rise time
 def cal_rise_time(winrs, ref, rise_con):
@@ -96,6 +108,7 @@ def cal_rise_time(winrs, ref, rise_con):
             rise_time = key
             break
     return rise_time
+
 
 # calculate percentage overshoot
 def cal_overshoot(winrs, ref):
@@ -124,6 +137,7 @@ def cal_overshoot(winrs, ref):
                 max = value
         return (max - ref) * 100.0 / ref
 
+
 # control function
 def control(cntr_rounds, ref, para_gamma, outfile):
     fo = open(outfile, 'w')
@@ -143,16 +157,16 @@ def control(cntr_rounds, ref, para_gamma, outfile):
             phi = 0.0
             first_round = False
         else:
-            error = win_nums[round-1] * 1.0 / (ref * len(yp)) - 1.0 / cntr_rounds
+            error = win_nums[round - 1] * 1.0 / (ref * len(yp)) - 1.0 / cntr_rounds
             phi = para_gamma * (-1) * error
         cost = 0
         clks = 0
         win = 0
 
-        imp_index = ((round+1)*cntr_size)
+        imp_index = ((round + 1) * cntr_size)
 
         if round == cntr_rounds - 1:
-            imp_index = imp_index + (len(yp) - cntr_size*cntr_rounds)
+            imp_index = imp_index + (len(yp) - cntr_size * cntr_rounds)
 
         # fang piao
         if phi <= min_phi:
@@ -160,12 +174,12 @@ def control(cntr_rounds, ref, para_gamma, outfile):
         elif phi >= max_phi:
             phi = max_phi
 
-        for i in range(round*cntr_size, imp_index):
+        for i in range(round * cntr_size, imp_index):
             bid_count += 1
             clk = y[i]
             pctr = yp[i]
             mp = mplist[i]
-            bid = max(minbid,lin(pctr, basectr, basebid) * (math.exp(phi)))
+            bid = max(minbid, lin(pctr, basectr, basebid) * (math.exp(phi)))
             if round == 0:
                 bid = 1000.0
 
@@ -179,12 +193,14 @@ def control(cntr_rounds, ref, para_gamma, outfile):
         winrs[round] = total_wins * 1.0 / bid_count
         win_nums[round] = win
         tc[round] = total_cost
-        ecpcs[round] = total_cost / (total_clks+1)
+        ecpcs[round] = total_cost / (total_clks + 1)
         click_ratio = total_clks * 1.0 / advs_test_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_test_bids[advertiser]
-        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (round, winrs[round], "test", phi, total_clks,  click_ratio, win_ratio, total_cost, ecpcs[round], ref))
+        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
+        round, winrs[round], "test", phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs[round], ref))
     for round in range(0, cntr_rounds):
-        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (round, ref, "test-ref", 0.0, 0,  0.0, 0.0, tc[round], 0.0, ref))
+        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
+        round, ref, "test-ref", 0.0, 0, 0.0, 0.0, tc[round], 0.0, ref))
     overshoot.append(cal_overshoot(winrs, ref))
     settling_time.append(cal_settling_time(winrs, ref))
     rise_time.append(cal_rise_time(winrs, ref, rise_con))
@@ -207,16 +223,16 @@ def control(cntr_rounds, ref, para_gamma, outfile):
             phi = 0.0
             first_round = False
         else:
-            error = win_nums_train[round-1] * 1.0 / (ref * len(yp_train)) - 1.0 / cntr_rounds
+            error = win_nums_train[round - 1] * 1.0 / (ref * len(yp_train)) - 1.0 / cntr_rounds
             phi = para_gamma * (-1) * error
         cost = 0
         clks = 0
         win = 0
 
-        imp_index = ((round+1)*cntr_size)
+        imp_index = ((round + 1) * cntr_size)
 
         if round == cntr_rounds - 1:
-            imp_index = imp_index + (len(yp_train) - cntr_size*cntr_rounds)
+            imp_index = imp_index + (len(yp_train) - cntr_size * cntr_rounds)
 
         # fang piao
         if phi <= min_phi:
@@ -224,12 +240,12 @@ def control(cntr_rounds, ref, para_gamma, outfile):
         elif phi >= max_phi:
             phi = max_phi
 
-        for i in range(round*cntr_size, imp_index):
+        for i in range(round * cntr_size, imp_index):
             bid_count += 1
             clk = y_train[i]
             pctr = yp_train[i]
             mp = mplist_train[i]
-            bid = max(minbid,lin(pctr, basectr, basebid) * (math.exp(phi)))
+            bid = max(minbid, lin(pctr, basectr, basebid) * (math.exp(phi)))
             if round == 0:
                 bid = 1000.0
 
@@ -243,13 +259,17 @@ def control(cntr_rounds, ref, para_gamma, outfile):
         winrs_train[round] = total_wins * 1.0 / bid_count
         win_nums_train[round] = win
         tc_train[round] = total_cost
-        ecpcs_train[round] = total_cost / (total_clks+1)
+        ecpcs_train[round] = total_cost / (total_clks + 1)
         click_ratio = total_clks * 1.0 / advs_train_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_train_bids[advertiser]
-        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (round, winrs_train[round], "train", phi, total_clks,  click_ratio, win_ratio, total_cost, ecpcs_train[round], ref))
+        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
+        round, winrs_train[round], "train", phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs_train[round],
+        ref))
     for round in range(0, cntr_rounds):
-        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (round, ref, "train-ref", 0.0, 0,  0.0, 0.0, tc_train[round], 0.0, ref))
+        fo.write("%d\t%.4f\t%s\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f\n" % (
+        round, ref, "train-ref", 0.0, 0, 0.0, 0.0, tc_train[round], 0.0, ref))
     fo.close()
+
 
 def control_test(cntr_rounds, ref, para_gamma):
     winrs = {}
@@ -266,16 +286,16 @@ def control_test(cntr_rounds, ref, para_gamma):
             phi = 0.0
             first_round = False
         else:
-            error = (win_nums[round-1] * 1.0 / (ref * len(yp))) - (1.0 / cntr_rounds)
+            error = (win_nums[round - 1] * 1.0 / (ref * len(yp))) - (1.0 / cntr_rounds)
             phi = para_gamma * (-1) * error
         cost = 0
         clks = 0
         win = 0
 
-        imp_index = ((round+1)*cntr_size)
+        imp_index = ((round + 1) * cntr_size)
 
         if round == cntr_rounds - 1:
-            imp_index = imp_index + (len(yp) - cntr_size*cntr_rounds)
+            imp_index = imp_index + (len(yp) - cntr_size * cntr_rounds)
 
         # fang piao
         if phi <= min_phi:
@@ -283,12 +303,12 @@ def control_test(cntr_rounds, ref, para_gamma):
         elif phi >= max_phi:
             phi = max_phi
 
-        for i in range(round*cntr_size, imp_index):
+        for i in range(round * cntr_size, imp_index):
             bid_count += 1
             clk = y[i]
             pctr = yp[i]
             mp = mplist[i]
-            bid = max(minbid,lin(pctr, basectr, basebid) * (math.exp(phi)))
+            bid = max(minbid, lin(pctr, basectr, basebid) * (math.exp(phi)))
             if round == 0:
                 bid = 1000.0
 
@@ -300,11 +320,12 @@ def control_test(cntr_rounds, ref, para_gamma):
                 cost += mp
                 total_cost += mp
         winrs[round] = total_wins * 1.0 / bid_count
-        ecpcs[round] = total_cost / (total_clks+1)
+        ecpcs[round] = total_cost / (total_clks + 1)
         win_nums[round] = win
         click_ratio = total_clks * 1.0 / advs_test_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_test_bids[advertiser]
-        print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f" % (round, winrs[round], phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs[round], ref)
+        print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f" % (
+        round, winrs[round], phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs[round], ref)
     overshoot.append(cal_overshoot(winrs, ref))
     settling_time.append(cal_settling_time(winrs, ref))
     rise_time.append(cal_rise_time(winrs, ref, rise_con))
@@ -326,16 +347,16 @@ def control_test(cntr_rounds, ref, para_gamma):
             phi = 0.0
             first_round = False
         else:
-            error = (win_nums_train[round-1] * 1.0 / (ref * len(yp_train))) - (1.0 / cntr_rounds)
+            error = (win_nums_train[round - 1] * 1.0 / (ref * len(yp_train))) - (1.0 / cntr_rounds)
             phi = para_gamma * (-1) * error
         cost = 0
         clks = 0
         win = 0
 
-        imp_index = ((round+1)*cntr_size)
+        imp_index = ((round + 1) * cntr_size)
 
         if round == cntr_rounds - 1:
-            imp_index = imp_index + (len(yp_train) - cntr_size*cntr_rounds)
+            imp_index = imp_index + (len(yp_train) - cntr_size * cntr_rounds)
 
         # fang piao
         if phi <= min_phi:
@@ -343,12 +364,12 @@ def control_test(cntr_rounds, ref, para_gamma):
         elif phi >= max_phi:
             phi = max_phi
 
-        for i in range(round*cntr_size, imp_index):
+        for i in range(round * cntr_size, imp_index):
             bid_count += 1
             clk = y_train[i]
             pctr = yp_train[i]
             mp = mplist_train[i]
-            bid = max(minbid,lin(pctr, basectr, basebid) * (math.exp(phi)))
+            bid = max(minbid, lin(pctr, basectr, basebid) * (math.exp(phi)))
             if round == 0:
                 bid = 1000.0
 
@@ -360,11 +381,13 @@ def control_test(cntr_rounds, ref, para_gamma):
                 cost += mp
                 total_cost += mp
         winrs_train[round] = total_wins * 1.0 / bid_count
-        ecpcs_train[round] = total_cost / (total_clks+1)
+        ecpcs_train[round] = total_cost / (total_clks + 1)
         win_nums_train[round] = win
         click_ratio = total_clks * 1.0 / advs_train_clicks[advertiser]
         win_ratio = total_wins * 1.0 / advs_train_bids[advertiser]
-        print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f" % (round, winrs_train[round], phi, total_clks, click_ratio, win_ratio, total_cost,  ecpcs_train[round], ref)
+        print "%d\t%.4f\t%.4f\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.1f" % (
+        round, winrs_train[round], phi, total_clks, click_ratio, win_ratio, total_cost, ecpcs_train[round], ref)
+
 
 random.seed(10)
 
@@ -380,9 +403,8 @@ y_train = []
 yp_train = []
 featWeight = {}
 
-
-#initialize the lr
-fi = open("../../make-ipinyou-data/"+advertiser+"/train.yzx.txt.lr.weight", 'r')
+# initialize the lr
+fi = open("../../make-ipinyou-data/" + advertiser + "/train.yzx.txt.lr.weight", 'r')
 for line in fi:
     s = line.strip().split()
     feat = int(s[0])
@@ -390,12 +412,12 @@ for line in fi:
     featWeight[feat] = weight
 fi.close()
 
-fi = open("../../make-ipinyou-data/"+advertiser+"/test.yzx.txt", 'r')
+fi = open("../../make-ipinyou-data/" + advertiser + "/test.yzx.txt", 'r')
 for line in fi:
     data = ints(line.strip().replace(":1", "").split())
     clk = data[0]
     mp = data[1]
-    fsid = 2 # feature start id
+    fsid = 2  # feature start id
     feats = data[fsid:]
     pred = estimator_lr(feats)
     y.append(clk)
@@ -403,12 +425,12 @@ for line in fi:
     mplist.append(mp)
 fi.close()
 
-fi = open("../../make-ipinyou-data/"+advertiser+"/train.yzx.txt", 'r')
+fi = open("../../make-ipinyou-data/" + advertiser + "/train.yzx.txt", 'r')
 for line in fi:
     data = ints(line.strip().replace(":1", "").split())
     clk = data[0]
     mp = data[1]
-    fsid = 2 # feature start id
+    fsid = 2  # feature start id
     feats = data[fsid:]
     pred = estimator_lr(feats)
     y_train.append(clk)
@@ -427,46 +449,52 @@ rmse_ss = []
 sd_ss = []
 report_path = ""
 
-
-if mode == "test": # test mode
+if mode == "test":  # test mode
     report_path = "../report/report-win-waterlevel-test.tsv"
-    parameter = ""+advertiser+"\t"+str(cntr_rounds)+"\t"+str(basebid)+"\t"+str(ref)+"\t" + \
-                str(para_gamma)+"\t"+str(settle_con)+"\t"+str(rise_con)
+    parameter = "" + advertiser + "\t" + str(cntr_rounds) + "\t" + str(basebid) + "\t" + str(ref) + "\t" + \
+                str(para_gamma) + "\t" + str(settle_con) + "\t" + str(rise_con)
     parameters.append(parameter)
     control_test(cntr_rounds, ref, para_gamma)
     rout = open(report_path, 'w')
-    rout.write("campaign\ttotal-rounds\tbase-bid\tref\tgamma\tsettle-con\trise-con\trise-time\tsettling-time\tovershoot\trmse-ss\tsd-ss\n")
+    rout.write(
+        "campaign\ttotal-rounds\tbase-bid\tref\tgamma\tsettle-con\trise-con\trise-time\tsettling-time\tovershoot\trmse-ss\tsd-ss\n")
     for idx, val in enumerate(parameters):
-        rout.write(val+"\t"+str(rise_time[idx])+"\t"+str(settling_time[idx])+"\t"+str(overshoot[idx])+"\t" + \
-                   str(rmse_ss[idx]) + "\t" + str(sd_ss[idx]))
+        rout.write(
+            val + "\t" + str(rise_time[idx]) + "\t" + str(settling_time[idx]) + "\t" + str(overshoot[idx]) + "\t" + \
+            str(rmse_ss[idx]) + "\t" + str(sd_ss[idx]))
     rout.close()
-elif mode == "batch":# batch mode
+elif mode == "batch":  # batch mode
     report_path = "../report/report-win-waterlevel-batch.tsv"
     for temp_gamma in para_gammas:
         para_gamma = temp_gamma * 1.0 * div
-        out_path = "../exp-data/win_waterlevel_"+advertiser+"_ref="+str(ref)+"_gamma=" + str(para_gamma)+".tsv"
+        out_path = "../exp-data/win_waterlevel_" + advertiser + "_ref=" + str(ref) + "_gamma=" + str(
+            para_gamma) + ".tsv"
         control(cntr_rounds, ref, para_gamma, out_path)
-        parameter = ""+advertiser+"\t"+str(cntr_rounds)+"\t"+str(basebid)+"\t"+str(ref)+"\t" + \
-                     str(para_gamma)+"\t"+str(settle_con)+"\t"+str(rise_con)
+        parameter = "" + advertiser + "\t" + str(cntr_rounds) + "\t" + str(basebid) + "\t" + str(ref) + "\t" + \
+                    str(para_gamma) + "\t" + str(settle_con) + "\t" + str(rise_con)
         parameters.append(parameter)
     rout = open(report_path, 'w')
-    rout.write("campaign\ttotal-rounds\tbase-bid\tref\tgamma\tsettle-con\trise-con\trise-time\tsettling-time\t\overshoot\trmse-ss\tsd-ss\n")
+    rout.write(
+        "campaign\ttotal-rounds\tbase-bid\tref\tgamma\tsettle-con\trise-con\trise-time\tsettling-time\t\overshoot\trmse-ss\tsd-ss\n")
     for idx, val in enumerate(parameters):
-        rout.write(val+"\t"+str(rise_time[idx])+"\t"+str(settling_time[idx])+"\t"+str(overshoot[idx])+"\t" + \
-                   str(rmse_ss[idx]) + "\t" + str(sd_ss[idx]))
+        rout.write(
+            val + "\t" + str(rise_time[idx]) + "\t" + str(settling_time[idx]) + "\t" + str(overshoot[idx]) + "\t" + \
+            str(rmse_ss[idx]) + "\t" + str(sd_ss[idx]))
     rout.close()
-elif mode == "single": # single mode
-    out_path = "../exp-data/win_waterlevel_"+advertiser+"_ref="+str(ref)+"_gamma="+str(para_gamma)+".tsv"
+elif mode == "single":  # single mode
+    out_path = "../exp-data/win_waterlevel_" + advertiser + "_ref=" + str(ref) + "_gamma=" + str(para_gamma) + ".tsv"
     control(cntr_rounds, ref, para_gamma, out_path)
     report_path = "../report/report-win-waterlevel-single.tsv"
-    parameter = ""+advertiser+"\t"+str(cntr_rounds)+"\t"+str(basebid)+"\t"+str(ref)+"\t" + \
-                str(para_gamma)+"\t"+str(settle_con)+"\t"+str(rise_con)
+    parameter = "" + advertiser + "\t" + str(cntr_rounds) + "\t" + str(basebid) + "\t" + str(ref) + "\t" + \
+                str(para_gamma) + "\t" + str(settle_con) + "\t" + str(rise_con)
     parameters.append(parameter)
     rout = open(report_path, 'w')
-    rout.write("campaign\ttotal-rounds\tbase-bid\tref\tgamma\tsettle-con\trise-con\trise-time\tsettling-time\tovershoot\trmse-ss\tsd-ss\n")
+    rout.write(
+        "campaign\ttotal-rounds\tbase-bid\tref\tgamma\tsettle-con\trise-con\trise-time\tsettling-time\tovershoot\trmse-ss\tsd-ss\n")
     for idx, val in enumerate(parameters):
-        rout.write(val+"\t"+str(rise_time[idx])+"\t"+str(settling_time[idx])+"\t"+str(overshoot[idx])+"\t" + \
-                   str(rmse_ss[idx]) + "\t" + str(sd_ss[idx]))
+        rout.write(
+            val + "\t" + str(rise_time[idx]) + "\t" + str(settling_time[idx]) + "\t" + str(overshoot[idx]) + "\t" + \
+            str(rmse_ss[idx]) + "\t" + str(sd_ss[idx]))
     rout.close()
 else:
     print "wrong mode entered"
